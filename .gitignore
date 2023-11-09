@@ -1,0 +1,14 @@
+# 忽略 .DS_Store 文件
+.DS_Store
+
+# 忽略 node_modules 目录
+node_modules/
+
+# 忽略 dist 目录
+dist/
+
+# 忽略所有 .md 文件
+*.md
+
+# 忽略所有 .log 文件
+*.log

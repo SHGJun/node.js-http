@@ -28,7 +28,6 @@ const register = (req, res) => {
             res.write(JSON.stringify({
                 code: 200,
                 message: '当前用户已经注册',
-                data: null
             }))
         } else {
             let slat = Math.ceil(Math.random() * 1000 + 1000).toString(36)

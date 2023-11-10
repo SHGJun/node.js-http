@@ -55,7 +55,7 @@ const register = (req, res) => {
 // 登录接口
 const login = (req, res) => {
     // 判断前端传来的用户名是否存在数据库中
-    const currentLoginUser = (_users,username) => {
+    const currentLoginUser = (_users,username,pwd) => {
 
         const userInfo = {
             isUser:false,
@@ -64,7 +64,7 @@ const login = (req, res) => {
         // 遍历数据库中的用户名数组
         _users.some(user => {
             // 判断当前登录的账号是否存在数据库   不存在
-            if (user.username != username) return;
+            if (user.username != username || user.password != pwd) return;
             // 判断当前登录的账号是否存在数据库   存在
             const obj = {
                 user:user,
@@ -77,7 +77,7 @@ const login = (req, res) => {
 
     getPostParams(req).then(({ username, password }) => {
         // 传入数据库用户名列表和前端传来的用户名
-        const userInfo = currentLoginUser(users,username);
+        const userInfo = currentLoginUser(users,username,password);
         // 判断当前登录的账号是否存在数据库
         if (userInfo.isUser) {
             res.write(JSON.stringify({
@@ -88,7 +88,7 @@ const login = (req, res) => {
         } else {
             res.write(JSON.stringify({
                 code: '401',
-                message: '登录失败，该用户不存在，请检查账号密码后重试',
+                message: '用户名或密码错误，请检查后重试',
             }))
         }
         res.end()

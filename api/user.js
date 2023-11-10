@@ -1,5 +1,4 @@
 //导入加密的模块 md5 (hash加密法 被破解 加盐（为了安全）)
-const md5 = require('md5')
 const { v4 } = require('uuid')
 const getPostParams = require('../utils/getPostParams');
 const createToken = require('../utils/createTokenCheck');
@@ -26,18 +25,17 @@ const register = (req, res) => {
         if (users.some(user => user.username == username)) {
             //当前用户已经存在
             res.write(JSON.stringify({
-                code: 200,
+                code: 401,
                 message: '当前用户已经注册',
             }))
         } else {
-            let slat = Math.ceil(Math.random() * 1000 + 1000).toString(36)
             //创建一个新的用户
             let user = {
                 id: v4(),
                 username,
-                password: md5(password + slat),
+                password: password,
                 createTime: new Date(),
-                slat //为了解密
+                token:createToken.getToken(username, 2)
             }
             //添加用户
             users.push(user)
@@ -56,6 +54,7 @@ const login = (req, res) => {
     // 判断前端传来的用户名是否存在数据库中
     const currentLoginUser = (_users,username,pwd) => {
 
+        // 用于判断正在登录的用户是否存在数据表中
         const userInfo = {
             isUser:false,
         };

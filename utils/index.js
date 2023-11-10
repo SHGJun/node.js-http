@@ -1,4 +1,4 @@
-const { login, register } = require('../services/user');
+const { login, register } = require('../api/user');
 const { parse } = require('url');
 
 

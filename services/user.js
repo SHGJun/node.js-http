@@ -1,18 +1,21 @@
 //导入加密的模块 md5 (hash加密法 被破解 加盐（为了安全）)
 const md5 = require('md5')
-const getPostParams  = require('../utils/getPostParams');
+const { v4 } = require('uuid')
+const getPostParams = require('../utils/getPostParams');
 const createToken = require('../utils/createTokenCheck');
 
 //创建一个users数组来装对应的用户
-const users = [
+let users = [
     {
-        username:'admin',
-        password:'123456'
+        id: v4(),
+        token: createToken.getToken('admin', 2),
+        username: 'admin',
+        password: '123456',
     }
 ]
 
 // 注册接口
-const register = (req,res) => {
+const register = (req, res) => {
     getPostParams(req).then(({
         username,
         password,
@@ -34,8 +37,6 @@ const register = (req,res) => {
                 id: v4(),
                 username,
                 password: md5(password + slat),
-                // sex: sex ? sex : '男',
-                // address: address ? address : '中国北京',
                 createTime: new Date(),
                 slat //为了解密
             }
@@ -52,18 +53,32 @@ const register = (req,res) => {
 }
 
 // 登录接口
-const login = (req,res) => {
-    getPostParams(req).then(({username,password}) => {
-        //根据获取的参数进行对应的操作（验证）
-        let filter = users.filter(user => {
-            user.token = createToken.getToken(user.username,2)
-            return username == user.username && password == user.password
-        })
-        if (filter[0]) {
+const login = (req, res) => {
+
+    const currentLoginUser = (_users,username) => {
+        const userInfo = {
+            user:{},
+            isCurrentUser:false,
+        };
+        _users.some(user => {
+            if (user.username != username) return;
+            const obj = {
+                user:user,
+                isCurrentUser:true
+            }
+            Object.assign(userInfo,obj)
+        });
+        return userInfo;
+    }
+
+    getPostParams(req).then(({ username, password }) => {
+        const currentUserInfo = currentLoginUser(users,username);
+
+        if (currentUserInfo.isCurrentUser) {
             res.write(JSON.stringify({
                 code: '200',
                 message: '登录成功',
-                data: filter[0]
+                data: currentUserInfo.user
             }))
         } else {
             res.write(JSON.stringify({

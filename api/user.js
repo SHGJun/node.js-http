@@ -1,5 +1,4 @@
-//导入加密的模块 md5 (hash加密法 被破解 加盐（为了安全）)
-const { v4 } = require('uuid')
+const { v4 } = require('uuid');
 const getPostParams = require('../utils/getPostParams');
 const createToken = require('../utils/createTokenCheck');
 

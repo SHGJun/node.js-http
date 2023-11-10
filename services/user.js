@@ -54,17 +54,21 @@ const register = (req, res) => {
 
 // 登录接口
 const login = (req, res) => {
-
+    // 判断前端传来的用户名是否存在数据库中
     const currentLoginUser = (_users,username) => {
+
         const userInfo = {
-            user:{},
-            isCurrentUser:false,
+            isUser:false,
         };
+
+        // 遍历数据库中的用户名数组
         _users.some(user => {
+            // 判断当前登录的账号是否存在数据库   不存在
             if (user.username != username) return;
+            // 判断当前登录的账号是否存在数据库   存在
             const obj = {
                 user:user,
-                isCurrentUser:true
+                isUser:true
             }
             Object.assign(userInfo,obj)
         });
@@ -72,13 +76,14 @@ const login = (req, res) => {
     }
 
     getPostParams(req).then(({ username, password }) => {
-        const currentUserInfo = currentLoginUser(users,username);
-
-        if (currentUserInfo.isCurrentUser) {
+        // 传入数据库用户名列表和前端传来的用户名
+        const userInfo = currentLoginUser(users,username);
+        // 判断当前登录的账号是否存在数据库
+        if (userInfo.isUser) {
             res.write(JSON.stringify({
                 code: '200',
                 message: '登录成功',
-                data: currentUserInfo.user
+                data: userInfo.user
             }))
         } else {
             res.write(JSON.stringify({
